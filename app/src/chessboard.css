@@ -1,3 +1,9 @@
 .square:hover{
     opacity: 0.6;
 }
+
+.square {
+    width : 70px;
+    height : 60px;
+    cursor : pointer;
+}
