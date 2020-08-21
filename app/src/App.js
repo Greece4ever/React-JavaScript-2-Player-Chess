@@ -18,6 +18,8 @@ import blackQueens from "./icons/black/queen.png";
 //Kings
 import whiteKings from "./icons/white/king.png";
 import blackKings from "./icons/black/king.png";
+//Timer
+import Timer from "./timer";
 
 
 function App() {
@@ -49,6 +51,9 @@ function App() {
   const [blackKing,setBlackKing] = useState( [] );
   const [whiteKing,setWhiteKing] = useState([] );
 
+  //Turn Managment
+  const [turn,setTurn] = useState(0);
+  const [currentPosition,setCurrentPosition] = useState('');
 
   //Black and white colors
   const colors = {
@@ -356,6 +361,19 @@ function App() {
   const handleDrag = (event) => 
   {
     let element = event.target;
+    setCurrentPosition(element.parentNode.getAttribute('id'))
+    let className = element.className;
+    if(className.includes("black") || className=="solider")
+    {
+      if(!turn==0){
+        return null;
+      }
+    }
+    else {
+      if(!turn==1){
+        return null;
+      }
+    }
     event.target.style.opacity = '0.5';
     element.classList.add("current-drug"); //Add a class that only this element will have to distinguish it
 
@@ -364,87 +382,121 @@ function App() {
   const handleDragEnd = (event) => 
   {
     let element = event.target;
+    const classList = element.classList;
+    if(classList.length===1)
+    {
+      return null;
+    }
     event.target.style.opacity = '1';
-    element.classList.remove("current-drug");
+    classList.remove("current-drug");
+    if(element.parentNode.getAttribute('id')===currentPosition)
+    {
+      return null;
+    }
+
+    setTurn(turn==0 ? 1 : 0);
   }
 
   const handleDragOver = (event) => 
   {
-    event.preventDefault();
-    event.dataTransfer.effectAllowed = "copyMove";
     let elementToReceiveDrop = event.target;
     let elentToBeDropped = document.querySelector('.current-drug'); //Unique
-    if(!elentToBeDropped){console.log(elentToBeDropped)}
+    if(!elentToBeDropped){return null}
+    if(elementToReceiveDrop.childNodes[1] && elementToReceiveDrop.childNodes[1]!=elentToBeDropped)
+    {
+      return null;
+    }
     elementToReceiveDrop.appendChild(elentToBeDropped);
 
   }
 
   return (
-    <div style={{"transform" : "translateX(35%)",marginTop : "10px"}} className="App">
-      <div style={{"width" : "600px",textAlign : "center",border : "20px solid #4f5056",borderRadius : "5px"}} className="row">
+    <div style={{position : "absolute",left : "50%",transform : "translate(-50%, 0)",top : "2%"}} className="App">
+      <div style={{'textAlign' : "center",transform : "translateX(25%)"}}>
+        <Timer setTurn={setTurn} turn={turn} />
+      </div>
+      {/* White Player Deaths */}
+      <div style={{position : "absolute",height : "515px",width : "100px",backgroundColor : 'rgb(79, 80, 86)',left: "-150px",marginTop : "17px"}}>
+        <img style={{"width" : "64px",marginLeft : "15px"}} src={blackKings}></img>
+        <hr></hr>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackKings}></img></div>
+      </div>
+      {/* Black Player Deaths */}
+      <div style={{position : "absolute",height : "515px",width : "100px",backgroundColor : 'rgb(79, 80, 86)',right: "-150px",marginTop : "17px"}}>
+        <img style={{"width" : "64px",marginLeft : "15px"}} src={whiteKings}></img>
+        <hr></hr>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackKings}></img></div>
+      </div>
+
+      
+
+      <div style={{"width" : "600px",textAlign : "center",border : "20px solid #4f5056",borderRadius : "5px",marginTop : "15px"}} className="row">
         {squares.map(square => (
-          <div id={`square_${square.id}`} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b>{square.id}</b></div>
+          <div id={`square_${square.id}`} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
         ))}
     </div>
     {/* <---------------- Soliders ----------->     */}
 
     {blackSoliders.map(solider => (
-      <img className="solider" id={solider.id} key={solider.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={pawn} draggable={true}></img>
+      <img style={{"cursor" : "grab"}} className="solider" id={solider.id} key={solider.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={pawn} draggable={true}></img>
     ))}
 
     {whiteSoliders.map(solider => (
-      <img className="solider-white" id={`white_${solider.id}`} key={solider.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whitePawn} draggable={true}></img>
+      <img style={{"cursor" : "grab"}} className="solider-white" id={`white_${solider.id}`} key={solider.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whitePawn} draggable={true}></img>
     ))}
 
     {/* <---------------- Towers ----------->     */}
 
     {whiteTowers.map(tower => (
-      <img className="tower-white" id={`${tower.id}`} key={tower.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteTower} draggable={true}></img>
+      <img style={{"cursor" : "grab"}} className="tower-white" id={`${tower.id}`} key={tower.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteTower} draggable={true}></img>
     ))}
 
     {blackTowers.map(tower => (
-          <img className="tower-black" id={`${tower.id}`} key={tower.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={Blacktower} draggable={true}></img>
+          <img style={{"cursor" : "grab"}} className="tower-black" id={`${tower.id}`} key={tower.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={Blacktower} draggable={true}></img>
         ))}
 
     {/* <---------------- Horses ----------->     */}
     {whiteHorses.map(horse => (
-      <img className="horse-white" id={`${horse.id}`} key={horse.id} onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteHorse} draggable={true}></img>
+      <img style={{"cursor" : "grab"}} className="horse-white" id={`${horse.id}`} key={horse.id} onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteHorse} draggable={true}></img>
     ))}
 
     {blackHorses.map(horse => (
-          <img className="horse-black" id={`${horse.id}`} key={horse.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={blackHorse} draggable={true}></img>
+          <img style={{"cursor" : "grab"}} className="horse-black" id={`${horse.id}`} key={horse.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={blackHorse} draggable={true}></img>
         ))}
 
     {/* <---------------- Bishops ----------->     */}
     {whiteBishops.map(bishop => (
-      <img className="bishop-white" id={`${bishop.id}`} key={bishop.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteBishop} draggable={true}></img>
+      <img style={{"cursor" : "grab"}} className="bishop-white" id={`${bishop.id}`} key={bishop.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteBishop} draggable={true}></img>
     ))}
 
     {blackBishops.map(bishop => (
-          <img className="bishop-black" id={`${bishop.id}`} key={bishop.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={blackBishop} draggable={true}></img>
+          <img style={{"cursor" : "grab"}} className="bishop-black" id={`${bishop.id}`} key={bishop.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={blackBishop} draggable={true}></img>
         ))}
 
 
     {/* <---------------- Queens ----------->     */}
 
     {whiteQueen.map(queen => (
-      <img className="queen-white" id={`${queen.id}`} key={queen.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteQueens} draggable={true}></img>
+      <img style={{"cursor" : "grab"}} className="queen-white" id={`${queen.id}`} key={queen.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteQueens} draggable={true}></img>
   ))}
 
     {blackQueen.map(queen => (
-        <img className="queen-black" id={`${queen.id}`} key={queen.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={blackQueens} draggable={true}></img>
+        <img style={{"cursor" : "grab"}} className="queen-black" id={`${queen.id}`} key={queen.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={blackQueens} draggable={true}></img>
     ))}
 
 
     {/* <---------------- Kings ----------->     */}
 
     {whiteKing.map(king => (
-      <img className="king-white" id={`${king.id}`} key={king.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteKings} draggable={true}></img>
+      <img style={{"cursor" : "grab"}} className="king-white" id={`${king.id}`} key={king.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={whiteKings} draggable={true}></img>
     ))}
 
     {blackKing.map(king => (
-      <img className="king-black" id={`${king.id}`} key={king.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={blackKings} draggable={true}></img>
+      <img style={{"cursor" : "grab"}} className="king-black" id={`${king.id}`} key={king.id}  onDragEnd={(event) => handleDragEnd(event)} onDragStart={(event) => {handleDrag(event)}} src={blackKings} draggable={true}></img>
     ))}
+    <div style={{"color" : "#fff",textAlign : "center",fontFamily : "'Monoton', cursive",fontSize : "40px",marginTop : "30px",pointerEvents : "none",userSelect : "none"}}>
+      Turn : {turn==0 ? <img style={{"width" : "64px"}} src={blackKings}></img> : <img style={{"width" : "64px"}} src={whiteKings}></img>}
+    </div>
 
     </div>
   );
