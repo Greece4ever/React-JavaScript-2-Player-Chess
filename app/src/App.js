@@ -356,16 +356,6 @@ function App() {
   },[blackKing])
 
 
-  // const isStartingPositionWhite = (index) => {
-  //   //Check if it is a solider's starting position
-  //   for (let i=9;i <= 16;i++) {
-  //     if(index==i){
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
-
   //         // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
   //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
   //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
@@ -452,7 +442,6 @@ function App() {
       return null;
     }
     elementToReceiveDrop.appendChild(elentToBeDropped);
-
   }
 
   return (
@@ -489,7 +478,7 @@ function App() {
 
       <div style={{"width" : "600px",textAlign : "center",border : "20px solid #4f5056",borderRadius : "5px",marginTop : "15px"}} className="row">
         {squares.map(square => (
-          <div id={`square_${square.id}`} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
+          <div id={`square_${square.id}`} onClick={(e) => document.getElementById(e.target.getAttribute('id')).style.backgroundColor = "red"} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
         ))}
     </div>
     {/* <---------------- Soliders ----------->     */}
