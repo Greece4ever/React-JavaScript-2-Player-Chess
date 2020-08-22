@@ -7,6 +7,8 @@
   * F = Forward B = Backward L = Left R = Right
  */
 
+/** FOR THE WHITE PIECES */
+
 //Forward Right
 const FR = [57,58,59,60,61,62,63,64,8,16,24,32,40,48,56]
 //Forward Left
@@ -24,6 +26,10 @@ const BACK = [1,2,3,4,5,6,7,8];
 const RIGHT = [8,16,24,32,40,48,56,64];
 //Front
 const FRONT = [57,58,59,60,61,62,63,64];
+
+/** FOR THE BLACK PIECES */
+const FRONT_black = [1,2,3,4,5,6,7,8];
+const BACK_black = [57,58,59,60,61,62,63,64];
 
 //Bishop
 const handleBishop = (start) => {
@@ -121,17 +127,36 @@ const isStartingPosition = (position) => {
   return starting_positions.includes(position)
 }
 
+const isStartingPositionBlack = (position) => {
+  const starting_positions = BACK_black.map(item => item+8)
+  return starting_positions.includes(position)
+
+}
+
 const handleSolider = (position) => {
   switch(isStartingPosition(position)) {
     case true:
       return [position+8,position+16]
     default:
       let move = position+8;
-      if(!BACK.includes(position))
-      {return [position+8]}
+      if(!FRONT.includes(move))
+      {return [move]}
       return [];
   }
 }
+
+const handleSoliderBlack = (position) => {
+  switch(isStartingPosition(position)) {
+    case true:
+      return [position-8,position-16]
+    default:
+      let move = position-8;
+      if(!FRONT_black.includes(move))
+      {return [move]}
+      return [];
+  }
+}
+
 
 //King
 const handleKing = (position) => {
