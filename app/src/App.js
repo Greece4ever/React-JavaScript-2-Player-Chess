@@ -356,6 +356,51 @@ function App() {
   },[blackKing])
 
 
+  // const isStartingPositionWhite = (index) => {
+  //   //Check if it is a solider's starting position
+  //   for (let i=9;i <= 16;i++) {
+  //     if(index==i){
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
+
+  //         // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
+  //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
+  //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
+  //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
+  //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
+
+
+  // const showPossibleMoves = (className,start,target,target_childNodes,color) => {
+  //   let movesArray = [];
+  //   switch(className.toLowerCase()) 
+  //   {
+  //     case "horse":
+  //       //All Possible combination
+  //       movesArray.push(start+17,start+16,start+10,start+6,start-17,start-16,start-10,start-6)
+  //     case "solider":
+  //       movesArray.push(start + 8);
+  //       if (isStartingPositionWhite(start))
+  //       {
+  //         movesArray.push(start+16);
+  //       }
+  //       movesArray.push(start+9,start+7,start-9,start-7)
+  //     case "tower":
+  //       for (let i=1;i <= )
+  //       movesArray.push()
+  //     case "bishop":
+  //       break;
+  //     case "queen":
+  //       break;
+  //     case "king":
+  //       break;
+  //   }
+  // }
+
+  // }
+
   // < Handle Drag and Drop >
 
   const handleDrag = (event) => 
@@ -419,13 +464,25 @@ function App() {
       <div style={{position : "absolute",height : "515px",width : "100px",backgroundColor : 'rgb(79, 80, 86)',left: "-150px",marginTop : "17px"}}>
         <img style={{"width" : "64px",marginLeft : "15px"}} src={blackKings}></img>
         <hr></hr>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={pawn}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackHorse}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={Blacktower}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackBishop}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackQueens}></img></div>
         <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackKings}></img></div>
+
       </div>
       {/* Black Player Deaths */}
       <div style={{position : "absolute",height : "515px",width : "100px",backgroundColor : 'rgb(79, 80, 86)',right: "-150px",marginTop : "17px"}}>
         <img style={{"width" : "64px",marginLeft : "15px"}} src={whiteKings}></img>
         <hr></hr>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackKings}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whitePawn}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteHorse}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteTower}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteBishop}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteQueens}></img></div>
+        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteKings}></img></div>
+
       </div>
 
       
