@@ -655,7 +655,7 @@ function App() {
 
       <div style={{"width" : "600px",textAlign : "center",border : "20px solid #4f5056",borderRadius : "5px",marginTop : "15px"}} className="row">
         {squares.map(square => (
-          <div id={`square_${square.id}`} color={square.color===1 ? colors.white : colors.black} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
+          <div id={`square_${square.id}`} color={square.color===1 ? colors.white : colors.black} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute",fontSize : "10px"}}>{square.id}</b></div>
         ))}
     </div>
     {/* <---------------- Soliders ----------->     */}
