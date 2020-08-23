@@ -22,6 +22,8 @@ import blackKings from "./icons/black/king.png";
 import Timer from "./timer";
 //Movement
 import { handleMovement } from "./movements";
+//Killing
+import { FilterDuplicates2 } from "./functions";
 
 
 function App() {
@@ -59,10 +61,13 @@ function App() {
   
   //Moving
   const [possibleMoves,setPossibleMoves] = useState([]);
-  
+  const [reciver,setReceiver] = useState();
+
   //Kills
   const [killed,setKilled] = useState([])
   //All classess
+  const [killedWhite,setKilledWhite] = useState([]);
+  const [killedBlack,setKilledBlack] = useState([]);
 
 
   //Black and white colors
@@ -407,7 +412,6 @@ function App() {
         }
         else {
           const childPiece = HTML_ELEMENT.childNodes[1];
-          let tmpID;
           let obj_class = element.classList[0];
           if(obj_class.trim()=='solider')
           {
@@ -426,10 +430,6 @@ function App() {
             childClass = [childClass[0],childClass[1]];
             };
           if(childClass[1]!=obj_class[1]) {
-            console.log(childClass)
-            console.log(HTML_ELEMENT)
-            setKilled(prev => [HTML_ELEMENT,childPiece])
-            console.log(HTML_ELEMENT)
             HTML_ELEMENT.classList.add("possible_move");
             HTML_ELEMENT.style.backgroundColor = "#d66c62";
             HTML_ELEMENT.style.border = "1px solid #d66c62";      
@@ -446,10 +446,27 @@ function App() {
 
   const handleDragEnd = (event) => 
   {
-    setKilled([])
+    console.log(killed)
+    console.log(reciver)
+    if(killed[1]!=undefined && killed[0]==reciver )
+    {
+      const isWhiteOrBlack = killed[1].className;
+      let result = isWhiteOrBlack.trim().toLowerCase();
+      let img_src = killed[1].src;
+      if (result==='solider' || result.includes('black'))
+      {
+        result = 'black';
+        setKilledBlack(prev => [...prev,img_src]);
+      }
+      else {
+        result = 'white';
+        setKilledWhite(prev => [...prev,img_src]);
+      }
+    }
+    setKilled([]);
     const initial_position = document.getElementById(currentPosition);
     initial_position.style.backgroundColor = initial_position.getAttribute('color');
-    initial_position.style.border = '0'
+    initial_position.style.border = '0';
 
     let element = event.target;
     const classList = element.classList;
@@ -480,31 +497,31 @@ function App() {
 
   const handleDragOver = (event) => 
   {
-    let elementToReceiveDrop = event.target;
-    if(killed[0]!=undefined){
-      if(elementToReceiveDrop!=killed[0]) {
-        killed[0].appendChild(killed[1])
-      }  
-    }
     let elentToBeDropped = document.querySelector('.current-drug'); //Unique
     if(!elentToBeDropped){return null}
     //if there is another element in that element
-    if(elementToReceiveDrop.childNodes[1] && elementToReceiveDrop.childNodes[1]!=elentToBeDropped)
-    {
-      console.log(elementToReceiveDrop.style.backgroundColor.trim())
-      if(elementToReceiveDrop.style.backgroundColor.trim() == '#d66c62' || elementToReceiveDrop.style.backgroundColor.trim() ==  "rgb(214, 108, 98)") {
-        console.log("I WAS CALLED")
-        elementToReceiveDrop.removeChild(elementToReceiveDrop.childNodes[1])
-        elementToReceiveDrop.appendChild(elentToBeDropped);
-      }
-      return null;
-    }
+    let elementToReceiveDrop = event.target;
     let id = elementToReceiveDrop.getAttribute('id').replace("square_",'');
     if (!possibleMoves.includes(Number(id))) {
-      if(id!=currentPosition.replace("square_",'')) {
+      if(id!=currentPosition.replace("square_",'') && elementToReceiveDrop.style.backgroundColor.trim() !=  "rgb(214, 108, 98)") {
         return null;
       }
     }
+    if(killed[0]!=undefined && elementToReceiveDrop!=killed[0]) {
+      killed[0].appendChild(killed[1])
+    }
+    if(elementToReceiveDrop.childNodes[1] && elementToReceiveDrop.childNodes[1]!=elentToBeDropped)
+    {
+      if(elementToReceiveDrop.style.backgroundColor.trim() == '#d66c62' || elementToReceiveDrop.style.backgroundColor.trim() ==  "rgb(214, 108, 98)") {
+        setKilled([elementToReceiveDrop,elementToReceiveDrop.childNodes[1]])
+        elementToReceiveDrop.removeChild(elementToReceiveDrop.childNodes[1])
+        elementToReceiveDrop.appendChild(elentToBeDropped);
+        setReceiver(elementToReceiveDrop)
+
+      }
+      return null;
+    }
+    setReceiver(elementToReceiveDrop)
     elementToReceiveDrop.appendChild(elentToBeDropped);
   }
 
@@ -517,28 +534,21 @@ function App() {
       <div style={{position : "absolute",height : "515px",width : "100px",backgroundColor : 'rgb(79, 80, 86)',left: "-150px",marginTop : "17px"}}>
         <img style={{"width" : "64px",marginLeft : "15px"}} src={blackKings}></img>
         <hr></hr>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={pawn}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackHorse}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={Blacktower}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackBishop}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackQueens}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={blackKings}></img></div>
-
+        {
+          FilterDuplicates2(killedBlack).map(item => (
+            <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>{item[0]} x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={item[1]}></img></div>
+          ))
+        }
       </div>
       {/* Black Player Deaths */}
       <div style={{position : "absolute",height : "515px",width : "100px",backgroundColor : 'rgb(79, 80, 86)',right: "-150px",marginTop : "17px"}}>
         <img style={{"width" : "64px",marginLeft : "15px"}} src={whiteKings}></img>
         <hr></hr>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whitePawn}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteHorse}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteTower}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteBishop}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteQueens}></img></div>
-        <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>3 x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={whiteKings}></img></div>
+        {FilterDuplicates2(killedWhite).map(item => (
+            <div className="inline"><span style={{"color" : "#fff",fontSize : "22px",marginTop : "10px",marginLeft : "10px"}}>{item[0]} x</span><img style={{marginBottom : "7px","width" : "32px",marginLeft : "5px"}} src={item[1]}></img></div>
+        ))}
 
       </div>
-
-      
 
       <div style={{"width" : "600px",textAlign : "center",border : "20px solid #4f5056",borderRadius : "5px",marginTop : "15px"}} className="row">
         {squares.map(square => (
