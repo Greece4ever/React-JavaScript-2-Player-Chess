@@ -21,9 +21,30 @@ import blackKings from "./icons/black/king.png";
 //Timer
 import Timer from "./timer";
 //Movement
-import { handleMovement } from "./movements";
+import { handleMovement , LEFT , RIGHT , FRONT , BACK } from "./movements";
 //Killing
 import { FilterDuplicates2 } from "./functions";
+import ChoosePlayer from "./solider_chose_piece";
+
+//Black
+export const piecesBlack = {
+  solider : <img className="d" key={"solider"} src={pawn} draggable={false}></img>,
+  rook : <img className="a" key={"tower"} src={Blacktower} draggable={false}></img>,
+  horse : <img className="s" key={"horse"} src={blackHorse} draggable={false}></img>,
+  bishop : <img className="d" key={"bishop"} src={blackBishop} draggable={false}></img>,
+  queen : <img className="s" key={"queen"} src={blackQueens} draggable={false}></img>,
+  king : <img className="x" key={"king"} src={blackKings} draggable={false}></img>,
+}
+//White
+export const piecesWhite = {
+  solider : <img className="d" key={"solider"} src={whitePawn} draggable={false}></img>,
+  rook : <img className="a" key={"tower"} src={whiteTower} draggable={false}></img>,
+  horse : <img className="s" key={"horse"} src={whiteHorse} draggable={false}></img>,
+  bishop : <img className="x" key={"bishop"} src={whiteBishop} draggable={false}></img>,
+  queen : <img className="d" key={"queen"} src={whiteQueens} draggable={false}></img>,
+  king : <img className="x" key={"king"} src={whiteKings} draggable={false}></img>,
+}
+
 
 
 function App() {
@@ -68,6 +89,10 @@ function App() {
   //All classess
   const [killedWhite,setKilledWhite] = useState([]);
   const [killedBlack,setKilledBlack] = useState([]);
+
+  const [black,setBlack] = useState(false);
+  const [id,setID] = useState('');
+
 
 
   //Black and white colors
@@ -389,7 +414,6 @@ function App() {
     }
     document.getElementById(id).style.backgroundColor = "#97d8a1";
     document.getElementById(id).style.border = "1px solid #8cea9a"
-
     let pieceNcolor = className.split('-');
     //Special case in black pawns
     if(pieceNcolor.length ===1) pieceNcolor = [className,'black']
@@ -402,19 +426,31 @@ function App() {
     //Special case for solider
     if(cur_class.includes('solider'))
     {
-      console.log("HERE IS A SOLIDER")
       let position = Number(id.split("_")[1]);
-      let extra_moves;
+      let extra_moves = [];
       let bool;
       //black
       if(className==='solider')
       {
-        extra_moves = [position-9,position-7];
+        if(!LEFT.includes(position)) {
+          extra_moves.push(position-9);
+        }
+        if(!RIGHT.includes(position))
+        {
+          extra_moves.push(position-7);
+        }
         bool = 'black';
       }
       //white
       else {
-        extra_moves = [position+9,position+7];
+        if(!LEFT.includes(position))
+        {
+          extra_moves.push(position+7);
+        }
+        if(!RIGHT.includes(position))
+        {
+          extra_moves.push(position+9);
+        }
         bool = 'white';
       }
       extra_moves.forEach(move => {
@@ -424,7 +460,6 @@ function App() {
           if(bool=='black') {
             let GAMO = HTML_ELEMENT.childNodes[1].className;
             if(GAMO!='solider') {
-              console.log("I WAS ACNOLADGED")
               HTML_ELEMENT.classList.add("possible_move");
               HTML_ELEMENT.style.backgroundColor = "#d66c62";
               HTML_ELEMENT.style.border = "1px solid #d66c62";          
@@ -446,7 +481,7 @@ function App() {
         num_position = possible_moves[move][directionalMove]
         HTML_ELEMENT = document.getElementById(`square_${num_position}`);
         if(HTML_ELEMENT.childNodes.length < 2) {
-          moves_tmp.push(num_position)
+          moves_tmp.push(num_position);
           HTML_ELEMENT.classList.add("possible_move");
           HTML_ELEMENT.style.backgroundColor = "rgb(159, 171, 207)";
           HTML_ELEMENT.style.border = "1px solid #97a7d8";  
@@ -475,7 +510,12 @@ function App() {
             HTML_ELEMENT.style.backgroundColor = "#d66c62";
             HTML_ELEMENT.style.border = "1px solid #d66c62";      
           };
+          if(!element.className.includes('horse'))
+          {
+            break;
+          }
         };
+        
       };
     };
     setPossibleMoves(moves_tmp);
@@ -529,6 +569,28 @@ function App() {
       return null;
     }
 
+    let dropped_piece = event.target;
+    if(dropped_piece.className.includes('solider'))
+    {
+      const target_position = Number(dropped_piece.parentNode.getAttribute('id').replace('square_',''));
+      let button = document.getElementById('$1');
+      switch(dropped_piece.className) {
+        case 'solider':
+          if(BACK.includes(target_position)) {
+            setID(element.getAttribute('id'));
+            setBlack(element.className=='solider' ? true : false)
+            button.click();
+          }
+          break;
+        case 'solider-white':
+          if(FRONT.includes(target_position)) {
+            setID(element.getAttribute('id'));
+            setBlack(element.className=='solider' ? true : false)
+            button.click();
+          }
+          break;
+      }
+    }
 
     setTurn(turn==0 ? 1 : 0);
   }
@@ -564,6 +626,9 @@ function App() {
   }
 
   return (
+    <div>
+      <ChoosePlayer id={id} black={black} />
+
     <div style={{position : "absolute",left : "50%",transform : "translate(-50%, 0)",top : "2%"}} className="App">
       <div style={{'textAlign' : "center",transform : "translateX(25%)"}}>
         <Timer setTurn={setTurn} turn={turn} />
@@ -656,6 +721,7 @@ function App() {
       Turn : {turn==0 ? <img style={{"width" : "64px"}} src={blackKings}></img> : <img style={{"width" : "64px"}} src={whiteKings}></img>}
     </div>
 
+    </div>
     </div>
   );
 }

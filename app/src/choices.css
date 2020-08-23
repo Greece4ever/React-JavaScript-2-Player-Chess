@@ -1,0 +1,13 @@
+.display-piece 
+{
+    border : 5px solid rgb(66, 64, 60);
+    border : 5px solid rgb(159, 136, 90);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+.display-piece:hover{
+    background-color: rgb(179, 122, 57);
+
+}   

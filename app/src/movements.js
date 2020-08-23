@@ -22,16 +22,15 @@ const BR_black = [57,58,59,60,61,62,63,64,8,16,24,32,40,48,56]
 const BL_black = [57,58,59,60,61,62,63,64,1,9,17,25,33,41,49,57]
 
 
-
 //Left
 const leftEND = [1,9,17,25,33,41,49,57]
-const LEFT = [1,9,17,25,33,41,49,57];
+export const LEFT = [1,9,17,25,33,41,49,57];
 //Back
-const BACK = [1,2,3,4,5,6,7,8];
+export const BACK = [1,2,3,4,5,6,7,8];
 //Right
-const RIGHT = [8,16,24,32,40,48,56,64];
+export const RIGHT = [8,16,24,32,40,48,56,64];
 //Front
-const FRONT = [57,58,59,60,61,62,63,64];
+export const FRONT = [57,58,59,60,61,62,63,64];
 
 /** FOR THE BLACK PIECES */
 const FRONT_black = [1,2,3,4,5,6,7,8];
@@ -109,51 +108,58 @@ while (!BR.includes(i)) {
 return [forward_left,forward_right,back_left,back_right]
 }
 
-
 //Rook
 const handleTower = (position) => {
-    /**
-   * Finds all the possible moves of a Tower
-   */
-  let forward_array = [];
-    let i = position + 8;
-    //Forwards
-    while(i < 64)
-    {
-      forward_array.push(i)
-      i+=8
-    }
-    //Backwards
-    let backward_array = [];
-    i = position -8;
-    while(i > 0)
-    {
-      backward_array.push(i)
-      i-=8
-    }
-    //Right
-    let right_Array = [];
-    i = position;
-    while(i %8!=0){
-      right_Array.push(i)
-      i++
-    }
-    let x = (right_Array[right_Array.length-1]+1)
-    if (!isNaN(x)) right_Array.push(x)
-    right_Array = right_Array.slice(1,right_Array.length)
-    //Left
-    i = position;
-    let left_Array = [];
-    while(!leftEND.includes(i)){
-      left_Array.push(i)
-      i--
-    }
-    left_Array = left_Array.slice(1,left_Array.length)
-    const y = (left_Array[left_Array.length-1]-1);
-    // left_Array.pop(position)
-    if (!isNaN(y)) left_Array.push(y)
-    return [forward_array,backward_array,right_Array,left_Array]
+  /**
+ * Finds all the possible moves of a Tower
+ */
+let forward_array = [];
+  let i = position + 8;
+  //Forwards
+  while(i < 64)
+  {
+    forward_array.push(i)
+    i+=8
+  }
+  //Backwards
+  let backward_array = [];
+  i = position -8;
+  while(i > 0)
+  {
+    backward_array.push(i)
+    i-=8
+  }
+  //Right
+  let right_Array = [];
+  i = position;
+  while(i %8!=0){
+    right_Array.push(i)
+    i++
+  }
+  let x = (right_Array[right_Array.length-1]+1)
+  x = isNaN(x) ? position - 1 : x
+  if (LEFT.includes(x)) {
+    y = NaN;
+  }
 
+  if (!isNaN(x)) right_Array.push(x)
+  right_Array = right_Array.slice(1,right_Array.length)
+  //Left
+  i = position;
+  let left_Array = [];
+  while(!leftEND.includes(i)){
+    left_Array.push(i)
+    i--
+  }
+  left_Array = left_Array.slice(1,left_Array.length)
+  let y = (left_Array[left_Array.length-1]-1);
+  y = isNaN(y) ? position - 1 : y
+  if (RIGHT.includes(y) || y <= 0) {
+    y = NaN;
+  }
+  // left_Array.pop(position)
+  if (!isNaN(y) && y!=position) left_Array.push(y)
+  return [forward_array,backward_array,right_Array,left_Array]
 }
 
 const handleTowerBlack = (position) => {
@@ -227,7 +233,7 @@ const handleSolider = (position) => {
       return [[position+8,position+16]]
     default:
       let move = position+8;
-      if(!FRONT.includes(move))
+      if(!FRONT.includes(position))
       {return [[move]]}
       return [];
   }
@@ -239,7 +245,7 @@ const handleSoliderBlack = (position) => {
       return [[position-8,position-16]]
     default:
       let move = position-8;
-      if(!FRONT_black.includes(move))
+      if(!FRONT_black.includes(position))
       {return [[move]]}
       return [];
   }
@@ -397,9 +403,6 @@ const handleHorse = (position) => {
   return [front,back,left,right]
 }
 
-
-
-
 export const handleMovement = (piece, color) => {
   switch (color.toLowerCase()) {
     case "white":
@@ -428,7 +431,7 @@ export const handleMovement = (piece, color) => {
         case "queen":
           return handleQueen;
         case "tower":
-          return handleTowerBlack;
+          return handleTower;
         case "horse":
           return handleHorse;
         case "bishop":
@@ -437,31 +440,3 @@ export const handleMovement = (piece, color) => {
       break;
   }
 }
-
-
-class doNotUseThis {
-// const handleHorse = (position) => {
-//   switch(true) {
-//     case BACK.includes(position):
-//       switch (true){
-//         case LEFT.includes(position):
-//           return [[position+16+1],[position+3+8]]
-//           break;
-//         case RIGHT.includes(position):
-//           return [[position+16-1],[position-3+8]]
-//           break;
-//         default:
-//           return [[position+16+1,position+16-1],[position+3+8,position-3+8]]
-//       }
-//       break;
-//     case FRONT.includes(position):
-//       switch(true) {
-//         default:
-//       }
-//     // default:
-//     //   return [[position+16+1,position+16-1],[position-16-1,position-16],[position+3+8,position-3+8]]  
-//   }
-// }
-
-}
-
