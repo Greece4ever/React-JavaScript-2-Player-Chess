@@ -446,8 +446,6 @@ function App() {
 
   const handleDragEnd = (event) => 
   {
-    console.log(killed)
-    console.log(reciver)
     if(killed[1]!=undefined && killed[0]==reciver )
     {
       const isWhiteOrBlack = killed[1].className;
@@ -552,7 +550,7 @@ function App() {
 
       <div style={{"width" : "600px",textAlign : "center",border : "20px solid #4f5056",borderRadius : "5px",marginTop : "15px"}} className="row">
         {squares.map(square => (
-          <div id={`square_${square.id}`} color={square.color===1 ? colors.white : colors.black} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
+          <div id={`square_${square.id}`} onClick={(event) => event.target.style.backgroundColor = "red"} color={square.color===1 ? colors.white : colors.black} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
         ))}
     </div>
     {/* <---------------- Soliders ----------->     */}

@@ -297,7 +297,7 @@ const handleKing = (position) => {
           front.push(position+7,position+8)
           break;
         default:
-          front.push(position+6,position+7,position+8)
+          front.push(position+7,position+8,position+9)
           break;
       }
     }
@@ -318,6 +318,88 @@ const handleKing = (position) => {
   return [front,back,left,right];
 }
 
+const handleHorse = (position) => {
+  let front = [];
+  let back = [];
+  let left = [];
+  let right = [];
+
+  // Left
+  const l1 = position-2+8;
+  const l2 = position-2-8;
+  if (!RIGHT.includes(l1) && !RIGHT.map(item => item-1).includes(l1))
+  //Does not matter whether we check l1 or l2 they are in the same collumn
+  {
+    if (l1 > 0 && l1 <= 64){
+      left.push(l1)
+    }
+  }
+  if (!RIGHT.includes(l2) && !RIGHT.map(item => item-1).includes(l2))
+  //Does not matter whether we check l1 or l2 they are in the same collumn
+  {
+    if (l2 > 0 && l2 <= 64){
+      left.push(l2)
+    }
+  }
+  //Right
+  let r1 = position+2+8;
+  let r2 = position+2-8;
+  if(!LEFT.includes(r1) && !LEFT.map(item => item +1).includes(r1))
+  {
+    if (r1 > 0 && r1 <= 64 ) {
+      right.push(r1);
+    }
+  }
+  if(!LEFT.includes(r2) && !LEFT.map(item => item +1).includes(r2))
+  {
+    if (r2 > 0 && r2 <= 64 ) {
+      right.push(r2);
+    }
+  }
+  //Front
+  let f1 = position+16+1;
+  let f2 = position+16-1;
+  if(!FRONT.map(item => item + 8).includes(position))
+  {
+    if (f1 <= 64 && f1 > 0) {
+
+      if (!LEFT.includes(f1))
+      {
+        front.push(f1)
+      }
+    }
+    if (f2 <= 64 && f2 > 0)
+    {
+      if (!RIGHT.includes(f2)) {
+        front.push(f2);
+      }
+    }
+  }
+  //Back
+  let b1 = position-16+1;
+  let b2 = position-16-1;
+  if(!BACK.map(item => item - 8).includes(position))
+  {
+    if (b1 <= 64 && b1 > 0) {
+      if (!LEFT.includes(b1))
+      {
+        back.push(b1)
+      }
+    }
+    if (b2 <= 64 && b2 > 0)
+    {
+      if (!RIGHT.includes(b2)) {
+        back.push(b2);
+      }
+    }
+  }
+
+  return [front,back,left,right]
+}
+
+
+
+
 export const handleMovement = (piece, color) => {
   switch (color.toLowerCase()) {
     case "white":
@@ -331,7 +413,7 @@ export const handleMovement = (piece, color) => {
         case "tower":
           return handleTower;
         case "horse":
-          break;
+          return handleHorse;
         case "bishop":
           return handleBishop;
       }
@@ -348,7 +430,7 @@ export const handleMovement = (piece, color) => {
         case "tower":
           return handleTowerBlack;
         case "horse":
-          break;
+          return handleHorse;
         case "bishop":
           return handleBishop;
       }
