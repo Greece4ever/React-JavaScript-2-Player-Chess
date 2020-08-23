@@ -398,6 +398,47 @@ function App() {
     let num_position;
     let HTML_ELEMENT;
     const moves_tmp = [];
+    let cur_class = className.toLowerCase()
+    //Special case for solider
+    if(cur_class.includes('solider'))
+    {
+      console.log("HERE IS A SOLIDER")
+      let position = Number(id.split("_")[1]);
+      let extra_moves;
+      let bool;
+      //black
+      if(className==='solider')
+      {
+        extra_moves = [position-9,position-7];
+        bool = 'black';
+      }
+      //white
+      else {
+        extra_moves = [position+9,position+7];
+        bool = 'white';
+      }
+      extra_moves.forEach(move => {
+        HTML_ELEMENT = document.getElementById(`square_${move}`)
+        if(HTML_ELEMENT.childElementCount > 1 && !HTML_ELEMENT.childNodes[1].className.includes(bool))
+        {
+          if(bool=='black') {
+            let GAMO = HTML_ELEMENT.childNodes[1].className;
+            if(GAMO!='solider') {
+              console.log("I WAS ACNOLADGED")
+              HTML_ELEMENT.classList.add("possible_move");
+              HTML_ELEMENT.style.backgroundColor = "#d66c62";
+              HTML_ELEMENT.style.border = "1px solid #d66c62";          
+            }
+          }
+          else {
+            HTML_ELEMENT.classList.add("possible_move");
+            HTML_ELEMENT.style.backgroundColor = "#d66c62";
+            HTML_ELEMENT.style.border = "1px solid #d66c62";        
+          }
+      }
+      })
+    }
+
     for (let move in possible_moves)
     {
       for (let directionalMove in possible_moves[move])
@@ -429,12 +470,11 @@ function App() {
             childClass = childClass.split('-');
             childClass = [childClass[0],childClass[1]];
             };
-          if(childClass[1]!=obj_class[1]) {
+          if(childClass[1]!=obj_class[1] && !element.className.includes('solider')) {
             HTML_ELEMENT.classList.add("possible_move");
             HTML_ELEMENT.style.backgroundColor = "#d66c62";
             HTML_ELEMENT.style.border = "1px solid #d66c62";      
-          }
-          
+          };
         };
       };
     };
@@ -550,7 +590,7 @@ function App() {
 
       <div style={{"width" : "600px",textAlign : "center",border : "20px solid #4f5056",borderRadius : "5px",marginTop : "15px"}} className="row">
         {squares.map(square => (
-          <div id={`square_${square.id}`} onClick={(event) => event.target.style.backgroundColor = "red"} color={square.color===1 ? colors.white : colors.black} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
+          <div id={`square_${square.id}`} color={square.color===1 ? colors.white : colors.black} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
         ))}
     </div>
     {/* <---------------- Soliders ----------->     */}
