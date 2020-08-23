@@ -20,6 +20,8 @@ import whiteKings from "./icons/white/king.png";
 import blackKings from "./icons/black/king.png";
 //Timer
 import Timer from "./timer";
+//Movement
+import { handleMovement } from "./movements";
 
 
 function App() {
@@ -54,6 +56,14 @@ function App() {
   //Turn Managment
   const [turn,setTurn] = useState(0);
   const [currentPosition,setCurrentPosition] = useState('');
+  
+  //Moving
+  const [possibleMoves,setPossibleMoves] = useState([]);
+  
+  //Kills
+  const [killed,setKilled] = useState([])
+  //All classess
+
 
   //Black and white colors
   const colors = {
@@ -97,7 +107,6 @@ function App() {
   useEffect(() => {
     let parent_element;
     let i = 1;
-    console.log(document.querySelectorAll('.solider'))
     document.querySelectorAll('.solider').forEach(solider => {
       parent_element = document.getElementById(`square_${48+i}`);
       parent_element.appendChild(solider)
@@ -153,7 +162,6 @@ function App() {
       switch(i) {
         case 1:
           parent_element = document.getElementById(`square_${i}`);
-          console.log(parent_element)
           parent_element.appendChild(tower)
           break;
         default:
@@ -167,7 +175,6 @@ function App() {
   useEffect(() => {
     let parent_element;
     let i = 1;
-    console.log(document.querySelectorAll('.tower-black'))
     document.querySelectorAll('.tower-black').forEach(tower => {
       switch(i) {
         case 1:
@@ -356,47 +363,13 @@ function App() {
   },[blackKing])
 
 
-  //         // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
-  //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
-  //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
-  //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
-  //       // <----------------- NEED TO CHECK IF THERE IS CHILD NODE IN THATPLACE ------------------->
-
-
-  // const showPossibleMoves = (className,start,target,target_childNodes,color) => {
-  //   let movesArray = [];
-  //   switch(className.toLowerCase()) 
-  //   {
-  //     case "horse":
-  //       //All Possible combination
-  //       movesArray.push(start+17,start+16,start+10,start+6,start-17,start-16,start-10,start-6)
-  //     case "solider":
-  //       movesArray.push(start + 8);
-  //       if (isStartingPositionWhite(start))
-  //       {
-  //         movesArray.push(start+16);
-  //       }
-  //       movesArray.push(start+9,start+7,start-9,start-7)
-  //     case "tower":
-  //       for (let i=1;i <= )
-  //       movesArray.push()
-  //     case "bishop":
-  //       break;
-  //     case "queen":
-  //       break;
-  //     case "king":
-  //       break;
-  //   }
-  // }
-
-  // }
-
   // < Handle Drag and Drop >
 
   const handleDrag = (event) => 
   {
     let element = event.target;
-    setCurrentPosition(element.parentNode.getAttribute('id'))
+    let id = element.parentNode.getAttribute('id');
+    setCurrentPosition(id);
     let className = element.className;
     if(className.includes("black") || className=="solider")
     {
@@ -409,6 +382,63 @@ function App() {
         return null;
       }
     }
+    document.getElementById(id).style.backgroundColor = "#97d8a1";
+    document.getElementById(id).style.border = "1px solid #8cea9a"
+
+    let pieceNcolor = className.split('-');
+    //Special case in black pawns
+    if(pieceNcolor.length ===1) pieceNcolor = [className,'black']
+    let possible_moves_callable = handleMovement(pieceNcolor[0],pieceNcolor[1]);
+    let possible_moves = possible_moves_callable(Number(id.split("_")[1]));
+    let num_position;
+    let HTML_ELEMENT;
+    const moves_tmp = [];
+    for (let move in possible_moves)
+    {
+      for (let directionalMove in possible_moves[move])
+      {
+        num_position = possible_moves[move][directionalMove]
+        HTML_ELEMENT = document.getElementById(`square_${num_position}`);
+        if(HTML_ELEMENT.childNodes.length < 2) {
+          moves_tmp.push(num_position)
+          HTML_ELEMENT.classList.add("possible_move");
+          HTML_ELEMENT.style.backgroundColor = "rgb(159, 171, 207)";
+          HTML_ELEMENT.style.border = "1px solid #97a7d8";  
+        }
+        else {
+          const childPiece = HTML_ELEMENT.childNodes[1];
+          let tmpID;
+          let obj_class = element.classList[0];
+          if(obj_class.trim()=='solider')
+          {
+            obj_class = ['solider','black'];
+          } else {
+            obj_class = obj_class.split('-');
+            obj_class = [obj_class[0],obj_class[1]];
+          }
+
+          let childClass = childPiece.className;
+          if(childClass=='solider') {
+            childClass = ['solider','black']
+          }
+          else {
+            childClass = childClass.split('-');
+            childClass = [childClass[0],childClass[1]];
+            };
+          if(childClass[1]!=obj_class[1]) {
+            console.log(childClass)
+            console.log(HTML_ELEMENT)
+            setKilled(prev => [HTML_ELEMENT,childPiece])
+            console.log(HTML_ELEMENT)
+            HTML_ELEMENT.classList.add("possible_move");
+            HTML_ELEMENT.style.backgroundColor = "#d66c62";
+            HTML_ELEMENT.style.border = "1px solid #d66c62";      
+          }
+          
+        };
+      };
+    };
+    setPossibleMoves(moves_tmp);
     event.target.style.opacity = '0.5';
     element.classList.add("current-drug"); //Add a class that only this element will have to distinguish it
 
@@ -416,6 +446,11 @@ function App() {
 
   const handleDragEnd = (event) => 
   {
+    setKilled([])
+    const initial_position = document.getElementById(currentPosition);
+    initial_position.style.backgroundColor = initial_position.getAttribute('color');
+    initial_position.style.border = '0'
+
     let element = event.target;
     const classList = element.classList;
     if(classList.length===1)
@@ -424,10 +459,21 @@ function App() {
     }
     event.target.style.opacity = '1';
     classList.remove("current-drug");
+    let moves = document.querySelectorAll('.possible_move');
+    let initial_color;
+    for (let j=0;j < moves.length;j++)
+    {
+      initial_color = moves[j].getAttribute('color');
+      moves[j].style.backgroundColor = initial_color;
+      moves[j].style.border = "0"
+      moves[j].classList.remove('possible_move')
+    }
+
     if(element.parentNode.getAttribute('id')===currentPosition)
     {
       return null;
     }
+
 
     setTurn(turn==0 ? 1 : 0);
   }
@@ -435,11 +481,29 @@ function App() {
   const handleDragOver = (event) => 
   {
     let elementToReceiveDrop = event.target;
+    if(killed[0]!=undefined){
+      if(elementToReceiveDrop!=killed[0]) {
+        killed[0].appendChild(killed[1])
+      }  
+    }
     let elentToBeDropped = document.querySelector('.current-drug'); //Unique
     if(!elentToBeDropped){return null}
+    //if there is another element in that element
     if(elementToReceiveDrop.childNodes[1] && elementToReceiveDrop.childNodes[1]!=elentToBeDropped)
     {
+      console.log(elementToReceiveDrop.style.backgroundColor.trim())
+      if(elementToReceiveDrop.style.backgroundColor.trim() == '#d66c62' || elementToReceiveDrop.style.backgroundColor.trim() ==  "rgb(214, 108, 98)") {
+        console.log("I WAS CALLED")
+        elementToReceiveDrop.removeChild(elementToReceiveDrop.childNodes[1])
+        elementToReceiveDrop.appendChild(elentToBeDropped);
+      }
       return null;
+    }
+    let id = elementToReceiveDrop.getAttribute('id').replace("square_",'');
+    if (!possibleMoves.includes(Number(id))) {
+      if(id!=currentPosition.replace("square_",'')) {
+        return null;
+      }
     }
     elementToReceiveDrop.appendChild(elentToBeDropped);
   }
@@ -478,7 +542,7 @@ function App() {
 
       <div style={{"width" : "600px",textAlign : "center",border : "20px solid #4f5056",borderRadius : "5px",marginTop : "15px"}} className="row">
         {squares.map(square => (
-          <div id={`square_${square.id}`} onClick={(e) => document.getElementById(e.target.getAttribute('id')).style.backgroundColor = "red"} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
+          <div id={`square_${square.id}`} color={square.color===1 ? colors.white : colors.black} key={square.id} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} onDragOver={(event) => handleDragOver(event)}><b style={{"pointerEvents" : "none",userSelect : "none",position : "absolute"}}>{square.id}</b></div>
         ))}
     </div>
     {/* <---------------- Soliders ----------->     */}

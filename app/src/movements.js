@@ -11,12 +11,18 @@
 
 //Forward Right
 const FR = [57,58,59,60,61,62,63,64,8,16,24,32,40,48,56]
-//Forward Left
 const FL = [57,58,59,60,61,62,63,64,1,9,17,25,33,41,49,57]
-//Backward Right
 const BR = [1,2,3,4,5,6,7,8,16,24,32,40,48,56]
-//Backward Left
 const BL = [1,2,3,4,5,6,7,8,9,17,25,33,41,49,57]
+
+/**FOR THE BLACK PIECES */
+const FR_black = [1,2,3,4,5,6,7,8,16,24,32,40,48,56]
+const FL_black = [1,2,3,4,5,6,7,8,9,17,25,33,41,49,57]
+const BR_black = [57,58,59,60,61,62,63,64,8,16,24,32,40,48,56]
+const BL_black = [57,58,59,60,61,62,63,64,1,9,17,25,33,41,49,57]
+
+
+
 //Left
 const leftEND = [1,9,17,25,33,41,49,57]
 const LEFT = [1,9,17,25,33,41,49,57];
@@ -67,6 +73,43 @@ const handleBishop = (start) => {
   return [forward_left,forward_right,back_left,back_right]
 }
 
+const handleBishopBlack = (start) => {
+  /**
+ * Finds all the possible moves of a bishop
+ */
+
+//FR
+let forward_right = [];
+let i = start; //forward_left
+while (!FR_black.includes(i)) {
+  forward_right.push(i-7)
+  i-=7
+}
+//FL
+let forward_left = [];
+i = start;
+while (!FL_black.includes(i)){
+  forward_left.push(i-9);
+  i-=9;
+}
+//BL
+let back_left = [];
+i = start;
+while (!BL_black.includes(i)) {
+  back_left.push(i+7);
+  i+=7;
+}
+//BR
+let back_right = [];
+i = start;
+while (!BR.includes(i)) {
+  back_right.push(i+9);
+  i+=9;
+}
+return [forward_left,forward_right,back_left,back_right]
+}
+
+
 //Rook
 const handleTower = (position) => {
     /**
@@ -113,10 +156,55 @@ const handleTower = (position) => {
 
 }
 
+const handleTowerBlack = (position) => {
+  let forward_array = [];
+  let i = position;
+  while (i > 0) {
+    forward_array.push(i-8)
+    i -=8;
+  }
+  forward_array.pop()
+  let backward_array = [];
+  i = position+8;
+  while(i <= 64)
+  {
+    backward_array.push(i)
+    i+=8
+  }
+  let right_Array = [];
+  i = position;
+  while(i %8!=0){
+    right_Array.push(i)
+    i++
+  }
+  let x = (right_Array[right_Array.length-1]+1)
+  if (!isNaN(x)) right_Array.push(x)
+  right_Array = right_Array.slice(1,right_Array.length)
+  //Left
+  i = position;
+  let left_Array = [];
+  while(!LEFT.includes(i)){
+    left_Array.push(i)
+    i--
+  }
+  left_Array = left_Array.slice(1,left_Array.length)
+  const y = (left_Array[left_Array.length-1]-1);
+  // left_Array.pop(position)
+  if (!isNaN(y)) left_Array.push(y)
+  return [forward_array,backward_array,right_Array,left_Array]
+}
+
 //Queen
 const handleQueen = (position) => {
   const rook = handleTower(position);
   const bishop = handleBishop(position);
+  rook.push(...bishop);
+  return rook;
+}
+
+const handleQueenBlack = (position) => {
+  const rook = handleTowerBlack(position);
+  const bishop = handleBishopBlack(position);
   rook.push(...bishop);
   return rook;
 }
@@ -128,7 +216,7 @@ const isStartingPosition = (position) => {
 }
 
 const isStartingPositionBlack = (position) => {
-  const starting_positions = BACK_black.map(item => item+8)
+  const starting_positions = BACK_black.map(item => item-8)
   return starting_positions.includes(position)
 
 }
@@ -136,27 +224,26 @@ const isStartingPositionBlack = (position) => {
 const handleSolider = (position) => {
   switch(isStartingPosition(position)) {
     case true:
-      return [position+8,position+16]
+      return [[position+8,position+16]]
     default:
       let move = position+8;
       if(!FRONT.includes(move))
-      {return [move]}
+      {return [[move]]}
       return [];
   }
 }
 
 const handleSoliderBlack = (position) => {
-  switch(isStartingPosition(position)) {
+  switch(isStartingPositionBlack(position)) {
     case true:
-      return [position-8,position-16]
+      return [[position-8,position-16]]
     default:
       let move = position-8;
       if(!FRONT_black.includes(move))
-      {return [move]}
+      {return [[move]]}
       return [];
   }
 }
-
 
 //King
 const handleKing = (position) => {
@@ -180,8 +267,6 @@ const handleKing = (position) => {
       case reduced_1 > 0:
       left.push(reduced_1);;
       break;
-      default:
-      null;
     }
   }
   //Right
@@ -199,8 +284,6 @@ const handleKing = (position) => {
       break;
       case greater_1 <= 64:
       right.push(greater_1)
-      default:
-      null;
     }
   }
     //Front
@@ -234,3 +317,69 @@ const handleKing = (position) => {
     }
   return [front,back,left,right];
 }
+
+export const handleMovement = (piece, color) => {
+  switch (color.toLowerCase()) {
+    case "white":
+      switch(piece.toLowerCase()) {
+        case "king":
+          return handleKing;
+        case "solider":
+          return handleSolider;
+        case "queen":
+          return handleQueen;
+        case "tower":
+          return handleTower;
+        case "horse":
+          break;
+        case "bishop":
+          return handleBishop;
+      }
+      break;
+    case "black":
+      switch(piece.toLowerCase()) {
+        case "king":
+          return handleKing;
+          break;
+        case "solider":
+          return handleSoliderBlack;
+        case "queen":
+          return handleQueen;
+        case "tower":
+          return handleTowerBlack;
+        case "horse":
+          break;
+        case "bishop":
+          return handleBishop;
+      }
+      break;
+  }
+}
+
+
+class doNotUseThis {
+// const handleHorse = (position) => {
+//   switch(true) {
+//     case BACK.includes(position):
+//       switch (true){
+//         case LEFT.includes(position):
+//           return [[position+16+1],[position+3+8]]
+//           break;
+//         case RIGHT.includes(position):
+//           return [[position+16-1],[position-3+8]]
+//           break;
+//         default:
+//           return [[position+16+1,position+16-1],[position+3+8,position-3+8]]
+//       }
+//       break;
+//     case FRONT.includes(position):
+//       switch(true) {
+//         default:
+//       }
+//     // default:
+//     //   return [[position+16+1,position+16-1],[position-16-1,position-16],[position+3+8,position-3+8]]  
+//   }
+// }
+
+}
+
