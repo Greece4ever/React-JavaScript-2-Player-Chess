@@ -4,7 +4,7 @@ Written entirely in React JSX
 
 The whole idea is in the following block of code
 
-```
+```js
   //Creates the Chessboard pattern
   useEffect(() => {
     let status = true;
@@ -25,7 +25,7 @@ Basically it creates and array of objects containing a value of `"color"` for th
 
 They are then rendered in the DOM using the `.map()` function
 
-```
+```js
 {squares.map(square => (
 <div id={`square_${square.id}`} className="square" style={{backgroundColor : square.color===1 ? colors.white : colors.black}} ></div>
 ))}
